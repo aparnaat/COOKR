@@ -20,15 +20,18 @@ model = MultiOutputClassifier(RandomForestClassifier(random_state=42))
 model.fit(X_train, train_labels)
 joblib.dump(model, 'item_categorization_model.joblib')
 
-item = input("Enter a new food item: ")
-
-if item not in df['Item'].values:
-    vectorized = vect.transform([item])
-    pred = model.predict(vectorized)
-    category = mlb.inverse_transform(pred)
-    new_row = pd.DataFrame({'Item': [item], 'Categories': [list(category[0])]})
-    new_row.to_csv('food_data.csv', mode='a', header=False, index=False)
-    print(f"'{item}': {list(category[0])}")
-else:
-    category = df.loc[df['Item'] == item, 'Categories'].values[0]
-    print(f"'{item}' : {category}")
+while(1):
+    item = input("Enter a new food item (stop to terminate): ")
+    if item.lower() == "stop":
+        break
+    else:
+        if item not in df['Item'].values:
+            vectorized = vect.transform([item])
+            pred = model.predict(vectorized)
+            category = mlb.inverse_transform(pred)
+            new_row = pd.DataFrame({'Item': [item], 'Categories': [list(category[0])]})
+            new_row.to_csv('food_data.csv', mode='a', header=False, index=False)
+            print(f"'{item}': {list(category[0])}")
+        else:
+            category = df.loc[df['Item'] == item, 'Categories'].values[0]
+            print(f"'{item}' : {category}")
